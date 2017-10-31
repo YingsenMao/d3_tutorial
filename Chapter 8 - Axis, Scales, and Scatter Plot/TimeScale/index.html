@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Time axis, prettier</title>
+        <script type="text/javascript" src="d3.js"></script>
+        <script type="text/javascript" src="drawPlot.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+        <script type="text/javascript">
+            var parser = d3.timeParse('%m/%d/%Y');
+            var dt;
+            var lst;
+
+            d3.csv('time_scale_data.csv', /*function(d) {
+                
+                return {
+                    Date: parser(d.Date),
+                    Amount: +d.Amount
+                };
+                
+            },*/ function(data) {
+                //dt = data.map(function(d) {
+                    lst = data.map(function(d) {
+                        return [parser(d['Date']), +d['Amount']]
+                    })
+                    drawPlot(lst);
+                
+                }
+            )
+                //console.log(dt);
+            
+
+		</script>
+	</body>
+</html>
