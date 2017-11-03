@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+        <title>D3: A simple bar chart</title>
+        <link href="style.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="d3.js"></script>
+        <script type="text/javascript" src="drawBar.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+        <div class='left'>
+            <div class = 'container'>
+                <p>Number of bars: </p>
+                <input type='number' class='num'>
+                <p>Y scale: </p>
+                <input type='number' class='yLen'>
+                <br>
+                <br>
+                <br>
+                <button class='btn'>Submit</button>
+            </div>
+        </div>
+
+        <div class='right'>
+
+        </div>
+
+
+        <script type="text/javascript">
+            var num = document.querySelector('.num');
+            var yLen = document.querySelector('.yLen');
+            var btn = document.querySelector('.btn');
+
+            btn.addEventListener('click', () => {
+                document.querySelector('.right').innerHTML = '';
+                draw_bar(num.value, yLen.value);
+            })
+		</script>
+	</body>
+</html>
