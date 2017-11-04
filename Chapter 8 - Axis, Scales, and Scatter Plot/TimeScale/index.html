@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Time axis, prettier</title>
+        <script type="text/javascript" src="d3.js"></script>
+        <script type="text/javascript" src="drawPlot.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+        <script type="text/javascript">
+
+            var w = 500;
+            var h = 300;
+            var padding = 40;
+
+            var dataset, xScale, yScale, xAxis, yAxis;
+
+            //Convert Date string to Date Object
+            var parser = d3.timeParse('%m/%d/%Y');
+
+            //Convert Date Object to String
+            var formatTime = d3.timeFormat('%e');
+            /*
+            %a - abbreviated weekday name.*
+            %A - full weekday name.*
+            %b - abbreviated month name.*
+            %B - full month name.*
+            %c - the locale’s date and time, such as %x, %X.*
+            %d - zero-padded day of the month as a decimal number [01,31].
+            %e - space-padded day of the month as a decimal number [ 1,31]; equivalent to %_d.
+            %H - hour (24-hour clock) as a decimal number [00,23].
+            %I - hour (12-hour clock) as a decimal number [01,12].
+            %j - day of the year as a decimal number [001,366].
+            %m - month as a decimal number [01,12].
+            %M - minute as a decimal number [00,59].
+            %p - either AM or PM.*
+            %u - Monday-based (ISO 8601) weekday as a decimal number [1,7].
+            %x - the locale’s date, such as %-m/%-d/%Y.*
+            %X - the locale’s time, such as %-I:%M:%S %p.*
+            %y - year without century as a decimal number [00,99].
+            %Y - year with century as a decimal number.
+            */
+            d3.csv('time_scale_data.csv', function(data) {
+
+                //Copy data into global dataset
+                dataset = data.map(function(d) { return [parser(d['Date']), +d['Amount']] });
+                
+                var maxDate = d3.max(dataset, function(d) { return d[0]; });
+                var minDate = d3.min(dataset, function(d) { return d[0]; });
+                //console.log(dataset)
+
+                xScale = d3.scaleTime()
+                            .domain([
+                                d3.timeDay.offset(minDate, -1),  //startDate minus one day, for padding
+								d3.timeDay.offset(maxDate, 1)	  //endDate plus one day, for padding
+                            ])
+                            .range([padding, w - padding]);
+
+                yScale = d3.scaleLinear()
+                            .domain([
+                                0, //Because I want a zero baseline
+                                d3.max(dataset, function(d) { return d[1]; })
+							])
+                            .range([h - padding, padding]);
+                    
+                //Define X axis
+                xAxis = d3.axisBottom()
+                        .scale(xScale)
+                        .ticks(10)
+                        .tickFormat(formatTime);
+
+				//Define Y axis
+				yAxis = d3.axisLeft()
+                        .scale(yScale)
+                        .ticks(10);     
+                        
+                var svg = d3.select('body')
+                            .append('svg')
+                            .attr('width', w)
+                            .attr('height', h);
+
+				//Generate guide lines
+				svg.selectAll("line")
+				   .data(dataset)
+				   .enter()
+				   .append("line")
+				   .attr("x1", function(d) {
+				   		return xScale(d[0]);
+				   })
+				   .attr("x2", function(d) {
+				   		return xScale(d[0]);
+				   })
+				   .attr("y1", h - padding)
+				   .attr("y2", function(d) {
+				   		return yScale(d[1]);
+				   })
+				   .attr("stroke", "#ddd")
+                   .attr("stroke-width", 1);
+                   
+
+                //Generate circles
+                svg.selectAll('circle')
+                    .data(dataset)
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function(d) {
+                        return xScale(d[0]);
+                    })
+                    .attr('cy', function(d) {
+                        return yScale(d[1]);
+                    })
+                    .attr('r', 2)
+
+	   			//Create X axis
+	   			svg.append("g")
+	   				.attr("class", "axis")
+	   				.attr("transform", "translate(0," + (h - padding) + ")")
+	   				.call(xAxis);
+	   			
+	   			//Create Y axis
+	   			svg.append("g")
+	   				.attr("class", "axis")
+	   				.attr("transform", "translate(" + padding + ",0)")
+                       .call(yAxis);
+                       
+
+            })
+
+		</script>
+	</body>
+</html>
