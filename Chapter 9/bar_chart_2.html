@@ -33,11 +33,17 @@
             var num = document.querySelector('.num');
             var yLen = document.querySelector('.yLen');
             var btn = document.querySelector('.btn');
-
+/*
             btn.addEventListener('click', () => {
-                document.querySelector('.right').innerHTML = '';
+                
                 draw_bar(num.value, yLen.value);
             })
+*/
+            d3.select('button')
+                .on('click', function() {
+                    document.querySelector('.right').innerHTML = '';
+                    draw_bar(num.value, yLen.value)
+                } )
 		</script>
 	</body>
 </html>
