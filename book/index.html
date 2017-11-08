@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Daniel Mao</title>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="count.js" type="text/javascript"></script>
+        <script src="chart.js" type="text/javascript"></script>
+        <link rel="shortcut icon" href="">
+    </head>
+    <body>
+        <script type = 'text/javascript'>
+            var numBar;
+            var h = 250;
+            var w = 800;
+            var padding = 10;
+
+
+            numBar = parseInt(prompt('Please enter number of bars you want to display: '));
+            while (numBar <= 0) {
+                alert('Please enter number above 0!');
+                numBar = parseInt(prompt('Please enter number of bars you want to display: '));
+            }
+            var lst = [];
+            for (var i = 0; i < numBar; i++) {
+                lst.push(Math.floor(Math.random() * 100));
+            }
+            
+            var svg = d3.select('body')
+                        .append('svg')
+                        .attr('height', h)
+                        .attr('width', w)
+
+            svg.selectAll('rect')
+                .data(lst)
+                .enter()
+                .append('rect')
+                .attr('x', function(d, i) {
+                    return w / lst.length * i;
+                })
+                .attr('y', function(d) {
+                    return h - d;
+                })
+                .attr('width', function(d) {
+                    return w / lst.length - padding;
+                })
+                .attr('height', function(d) {
+                    return d
+                })
+                .attr('fill', function(d) {
+                    return 'rgb(0, 0, ' + Math.round(d * 10) + ')';
+                })
+
+
+            svg.selectAll('text')
+                .data(lst)
+                .enter()
+                .append('text')
+                .text(function(d) {
+                    return d;
+                })
+                .attr('x', function(d, i) {
+                    return w / lst.length * i + (w / lst.length - padding) / 2;
+                })
+                .attr('y', function(d) {
+                    return h - d + 14;
+                })
+                .attr('font-family', 'sans-serif')
+                .attr('font-size', '11px')
+                .attr('fill', 'white');
+
+            //console.log(survival)
+            //d3.select('body').selectAll('rect')
+                
+        </script>
+    </body>
+</html>

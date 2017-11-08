@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Daniel Mao</title>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <link rel="stylesheet" href="style_2.css">
+        <link rel="shortcut icon" href="">
+    </head>
+    <body>
+        <script type = 'text/javascript'>
+            var numBar;
+            var h = 800;
+            var w = 1200;
+            var padding = 50;
+            var lst = [];
+
+
+            //Generate random number from input window
+            numBar = parseInt(prompt('Please enter number of points you want to display: '));
+            while (numBar <= 0) {
+                alert('Please enter number above 0!');
+                numBar = parseInt(prompt('Please enter number of points you want to display: '));
+            }
+            
+            for (var i = 0; i < numBar; i++) {
+                lst.push([Math.floor(Math.random() * w), Math.floor(Math.random() * h)]);
+            }
+
+
+            //Create scales
+            var xScale = d3.scaleLinear()
+                            .domain([0, d3.max(lst, function(d) { return d[0]; })])
+                            .range([padding, w - padding])
+
+            var yScale = d3.scaleLinear()
+                            .domain([0, d3.max(lst, function(d) {return d[1]; })])
+                            .range([h - padding, padding])
+
+            var rScale = d3.scaleLinear()
+                            .domain([0, d3.max(lst, function(d) {return d[1]; })])
+                            .range([5, 15])                       
+                            
+
+            //Create X and Y axis
+            var xAxis = d3.axisBottom()
+                            .scale(xScale);
+
+            var yAxis = d3.axisLeft()
+                            .scale(yScale)
+                            .ticks(5);
+
+            //Create graph
+            var svg = d3.select('body')
+                        .append('svg')
+                        .attr('height', h)
+                        .attr('width', w)
+
+            svg.selectAll('circle')
+                .data(lst)
+                .enter()
+                .append('circle')
+                .attr('cx', function(d) {
+                    return xScale(d[0]);
+                })
+                .attr('cy', function(d) {
+                    return yScale(d[1]);
+                })
+                .attr('r', function(d) {
+                    return rScale(d[1]);
+                });
+
+            svg.selectAll('text')
+                .data(lst)
+                .enter()
+                .append('text')
+                .text(function(d) {
+                    return d[0] + ',' + d[1];
+                })
+                .attr('x', function(d) {
+                    return xScale(d[0]);
+                })
+                .attr('y', function(d) {
+                    return yScale(d[1]);
+                })
+                .attr('font-family', 'sans-serif')
+                .attr('font-size', '11px')
+                .attr('fill', 'red');
+            //console.log(survival)
+            //d3.select('body').selectAll('rect')
+                
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', 'translate(0, ' + (h - padding) + ')')
+                .call(xAxis);
+
+
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', 'translate(' + padding + ',0)')
+                .call(yAxis);
+                
+        </script>
+    </body>
+</html>

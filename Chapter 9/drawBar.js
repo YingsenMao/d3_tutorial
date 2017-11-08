@@ -7,9 +7,10 @@ var draw_bar = function(numBar, yScale) {
         dataset.push(newNum);
     }
 
-    var w = 600;
+    var w = numBar * 50;
     var h = 600;
-    
+    var fontSz = 20;
+
     var xScale = d3.scaleBand()
                     .domain(d3.range(numBar))
                     .range([0, w])
@@ -25,6 +26,7 @@ var draw_bar = function(numBar, yScale) {
                 .attr('width', w)
                 .attr('height', h);
 
+    dataset.sort()
     svg.selectAll('rect')
         .data(dataset)
         .enter()
@@ -54,9 +56,21 @@ var draw_bar = function(numBar, yScale) {
             return xScale(i) + xScale.bandwidth() / 2;
         })
         .attr('y', function(d) {
-            return h - yScale(d) + 15;
+            if (d < 5) {
+                return h - yScale(d);
+            }
+            else {
+                return h - yScale(d) + fontSz;
+            }
         })
         .attr("font-family", "sans-serif")
-       .attr("font-size", "11px")
-       .attr("fill", "white");
+       .attr("font-size", fontSz)
+       .attr("fill", function(d) {
+        if (d < 5) {
+            return 'black';
+        }
+        else {
+            return 'white';
+        }
+    })
 }
