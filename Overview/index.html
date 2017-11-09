@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: A simple bar chart</title>
+        <script type="text/javascript" src="d3.js"></script>
+        <script type="text/javascript" src="d3.legend.js"></script>
+		<style type="text/css">     
+
+        </style>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+            var w = 800;
+            var h = 300;
+            var padding = 40;
+
+            var dataset, xScale, yScale, xAxis, yAxis, line;
+
+            //For converting strings to Dates
+            var parseTime = d3.timeParse('%Y')
+
+			//For converting Dates to strings
+			var formatTime = d3.timeFormat("%Y");
+
+            //Function for converting CSV values from strings to Dates and numbers
+            var rowConverter = function(d) {
+                return {
+                    region: d.region,
+                    date: parseTime(d.year),
+                    value: parseInt(d.value)
+                };
+            }
+
+            d3.csv('data.csv', rowConverter, function(data) {
+                var dataset = data;
+
+                var minDate = d3.min(dataset, function(d) { return d.date; });
+                var maxDate = d3.max(dataset, function(d) { return d.date; });
+
+                var minDateD = new Date(minDate);
+                var maxDateD = new Date(maxDate);
+                
+                minDateD.setDate(minDateD.getDate() - 360);
+                maxDateD.setDate(maxDateD.getDate() + 360); 
+                
+                
+				//Create scale functions
+                xScale = d3.scaleTime()
+                            .domain([ minDateD, maxDateD ])
+                            .range([ padding, w ]);
+                
+                /*
+                for (var i = 0; i < dataset.length; i++) {
+                    console.log(dataset[i]['date'], xScale(dataset[i]['date']), formatTime(dataset[i]['date']));
+                }
+                */
+
+                yScale = d3.scaleLinear()
+                            .domain([
+                                d3.min(dataset, function(d) { return d.value }) - 10,
+                                d3.max(dataset, function(d) { return d.value }) + 10
+                            ])
+                            .range([h - padding, 10]);
+
+                xAxis = d3.axisBottom()
+                            .scale(xScale)
+                            .ticks(10)
+						    .tickFormat(formatTime);    
+
+                yAxis = d3.axisLeft()
+                            .scale(yScale)
+                            .ticks(10);
+
+
+                var svg = d3.select('body')
+                            .append('svg')
+                            .attr('width', w)
+                            .attr('height', h);
+
+                svg.selectAll('circle')
+                    .data(dataset)
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function(d) {
+                        return xScale(d.date);
+                    })
+                    .attr('cy', function(d) {
+                        return yScale(d.value);
+                    })
+                    .attr('r', 3)                    
+                    .style('fill', function(d) {
+                        if (d.region == 'lombardy') {
+                            return 'red';
+                        } else {
+                            return 'blue';
+                        }
+                    })
+                    /*
+                    .attr("data-legend",function(d) { return d.region});
+
+                legend = svg.append("g")
+                .attr("class","legend")
+                .attr("transform","translate(50,30)")
+                .style("font-size","12px")
+                .call(d3.legend)
+                */
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(0,' + (h - padding) + ')')
+                    .call(xAxis);
+
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(' + padding + ',0)')
+                    .call(yAxis);
+
+                svg.append('text')
+                    .text('lombardy')
+                    .attr('x', xScale(minDate))
+                    .attr('y', 30)
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '13px');
+                    
+                svg.append('text')
+                    .text('emiglia')
+                    .attr('x', xScale(minDate))
+                    .attr('y', 50)
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '13px');
+
+                var legendA = new Date(2005, 6, 1);
+
+                svg.append('circle')
+                    .attr('cx', xScale(legendA))
+                    .attr('cy', 25)
+                    .attr('r', 5)       
+                    .style('fill', 'red');      
+
+                svg.append('circle')
+                    .attr('cx', xScale(legendA))
+                    .attr('cy', 45)
+                    .attr('r', 5)       
+                    .style('fill', 'blue');  
+
+                var dt = [{ x: new Date(2003, 6, 1), y: 120}, 
+                          { x: new Date(2003, 6, 1), y: 95},
+                          { x: new Date(2006, 6, 1), y: 95},
+                          { x: new Date(2006, 6, 1), y: 120},
+                          { x: new Date(2003, 6, 1), y: 120}];
+                
+                console.log(dt);
+
+                var line = d3.line()
+                    .x(function(d) { return xScale(d.x); })
+                    .y(function(d) { return yScale(d.y); });
+
+                svg.append('path')
+                    .datum(dt)
+                    .attr('class', 'line')
+                    .attr('d', line)
+                    .attr('fill-opacity', '0')
+                    .attr('stroke', '#000');
+            })
+            
+			
+		</script>
+	</body>
+</html>
