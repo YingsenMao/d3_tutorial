@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: A simple bar chart</title>
+        <script type="text/javascript" src="d3.js"></script>
+		<style type="text/css">     
+
+        </style>
+	</head>
+	<body>
+        <script type="text/javascript">
+            var dataset;
+
+            var margin = {top: 20, right: 80, bottom: 30, left: 50},
+                width = 960 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var svg = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
+            var xScale = d3.scaleTime()
+                            .range([ 0, width ]);
+
+            var yScale = d3.scaleLinear()
+                            .range([height, 0]);     
+
+            var cScale = d3.scaleOrdinal()
+                            .range(["#98abc5", "#8a89a6"]);
+
+            var xAxis = d3.axisBottom()
+                            .scale(xScale)
+                            .ticks(10)
+						    .tickFormat(formatTime);    
+
+            var yAxis = d3.axisLeft()
+                            .scale(yScale)
+                            .ticks(10);
+
+            //For converting strings to Dates
+            var parseTime = d3.timeParse('%Y')
+
+			//For converting Dates to strings
+			var formatTime = d3.timeFormat("%Y");
+
+            //Function for converting CSV values from strings to Dates and numbers
+            
+            var rowConverter = function(d, i, columns) {
+                for (var i = 1, n = columns.length; i < n; ++i) {
+                    d[columns[i]] = +d[columns[i]];
+                    }
+                    return d;
+            }
+            
+
+
+            d3.csv('data _crossTab.csv', rowConverter, function(data) {
+                dataset = data;
+                console.log(dataset);
+                var minDate = d3.min(dataset, function(d) { return d.Year; });
+                var maxDate = d3.max(dataset, function(d) { return d.Year; });
+
+                var minDateD = new Date(minDate);
+                var maxDateD = new Date(maxDate);
+
+                var keys = dataset.columns.slice(1);
+                
+
+
+                minDateD.setDate(minDateD.getDate());
+                maxDateD.setDate(maxDateD.getDate()); 
+                
+                
+				//Create scale functions
+                xScale.domain([ minDate, maxDate ]);
+                
+                /*
+                for (var i = 0; i < dataset.length; i++) {
+                    console.log(dataset[i]['date'], xScale(dataset[i]['date']), formatTime(dataset[i]['date']));
+                }
+                */
+
+                yScale.domain([0, d3.max(dataset, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+
+                cScale.domain(keys);
+
+
+
+
+                for (var i = 0; i < dataset.length; i++) {
+                    console.log(dataset[i]);
+                }
+                /*
+                var types = keys.map(function(key) {
+                    return {
+                    name: key,
+                    values: dataset.map(function(d) {
+                        return {year: d.Year, value: d[key]};
+                    })
+                    };
+                });
+                
+                console.log(types);
+                console.log(types[0].name);
+                console.log(types[0].values[0].year);
+                */
+                var type = svg.selectAll("g")
+                                .data(dataset)
+                                .enter().append("g")
+                                .attr("class", "type");
+                //console.log(keys.map(function(key) { return {key: key, year: dataset[0].Year, value: dataset[0][key]}; }));
+                 type.selectAll('circle')
+                    .data(function(d) { return keys.map(function(key) { return {key: key, year: d.Year, value: d[key]}; }); })
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function(d) {
+                        return xScale(d.year);
+                    })
+                    .attr('cy', function(d) {
+                        return yScale(d.value);
+                    })
+                    .attr('r', 3)                    
+                    .style('fill', function(d) {
+                        return cScale(d.key);
+                    })
+                    /*
+                    .attr("data-legend",function(d) { return d.region});
+
+                legend = svg.append("g")
+                .attr("class","legend")
+                .attr("transform","translate(50,30)")
+                .style("font-size","12px")
+                .call(d3.legend)
+                
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis);
+
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .call(yAxis);
+
+                svg.append('text')
+                    .text('lombardy')
+                    .attr('x', xScale(minDate))
+                    .attr('y', 30)
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '13px');
+
+     
+                svg.append('text')
+                    .text('emiglia')
+                    .attr('x', xScale(minDate))
+                    .attr('y', 50)
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '13px');
+
+                var legendA = new Date(2005, 6, 1);
+
+                svg.append('circle')
+                    .attr('cx', xScale(legendA))
+                    .attr('cy', 25)
+                    .attr('r', 5)       
+                    .style('fill', 'red');      
+
+                svg.append('circle')
+                    .attr('cx', xScale(legendA))
+                    .attr('cy', 45)
+                    .attr('r', 5)       
+                    .style('fill', 'blue');  
+
+                var dt = [{ x: new Date(2003, 6, 1), y: 120}, 
+                          { x: new Date(2003, 6, 1), y: 95},
+                          { x: new Date(2006, 6, 1), y: 95},
+                          { x: new Date(2006, 6, 1), y: 120},
+                          { x: new Date(2003, 6, 1), y: 120}];
+                
+                console.log(dt);
+
+                var line = d3.line()
+                    .x(function(d) { return xScale(d.x); })
+                    .y(function(d) { return yScale(d.y); });
+
+                svg.append('path')
+                    .datum(dt)
+                    .attr('class', 'line')
+                    .attr('d', line)
+                    .attr('fill-opacity', '0')
+                    .attr('stroke', '#000');
+*/
+            })
+            
+			
+		</script>
+	</body>
+</html>

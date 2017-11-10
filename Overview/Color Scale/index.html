@@ -8,9 +8,52 @@
 	<body>
 		<script type="text/javascript">
             var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+			var colorTest = colorScale.domain(['a', 'b', 'c']);
+			console.log('colorScale(0)');
             console.log(colorScale(0));
+			console.log('colorScale[0]');
+            console.log(colorScale[0]);
+			console.log('d3.schemeCategory10');
+			console.log(d3.schemeCategory10);
+			console.log('d3.schemeCategory10[0]');
             console.log(d3.schemeCategory10[0]);
+			console.log('colorScale(100)');
 			console.log(colorScale(100));
+			console.log('colorTest(""a"")');
+			console.log(colorTest('a'));
+			console.log('colorTest');
+			console.log(colorTest);
+
+            var colorScale2 = d3.scaleOrdinal()
+								.range(d3.schemeCategory10);
+			var colorTest2 = colorScale2.domain(['a', 'b', 'c']);
+			console.log('colorScale2(0)');
+            console.log(colorScale2(0));
+			console.log('colorScale2[0]');
+            console.log(colorScale2[0]);
+			console.log('colorScale2(100)');
+			console.log(colorScale2(100));
+			console.log('colorTest2(""a"")');
+			console.log(colorTest2('a'));
+			console.log('colorTest2');
+			console.log(colorTest2);
+
+
+            var colorScale3 = d3.scaleOrdinal()
+								.range(d3.schemeCategory10);
+			colorScale3.domain(['a', 'b', 'c']);
+			console.log('colorScale3(0)');
+            console.log(colorScale3(0));
+			console.log('colorScale3[0]');
+            console.log(colorScale3[0]);
+			console.log('colorScale3(100)');
+			console.log(colorScale3(100));
+			console.log('colorScale3(""a"")');
+			console.log(colorScale3('a'));
+			console.log('colorScale3');
+			console.log(colorScale3);
+
+
 		</script>
 	</body>
 </html>
