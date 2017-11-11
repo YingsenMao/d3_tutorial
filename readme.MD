@@ -1,5 +1,5 @@
 ## Scatter Plot with Two categorial Variables
-<img src="Scatter Plot with Two categorial variable 3.PNG" width="160">  
+<img src="Scatter Plot with Two categorial variable 3.PNG" width="480">  
 
 ```javascript
 //Scale with range
