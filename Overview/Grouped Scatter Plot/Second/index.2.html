@@ -28,7 +28,7 @@
                         .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             
-            var xScale = d3.scaleTime()
+            var xScale = d3.scaleBand()
                             .range([ 0, width ]);
 
             var yScale = d3.scaleLinear()
@@ -38,19 +38,10 @@
                             .range(["#98abc5", "#8a89a6"]);
 
             var xAxis = d3.axisBottom()
-                            .scale(xScale)
-                            .ticks(10)
-						    .tickFormat(formatTime);    
+                            .scale(xScale);    
 
             var yAxis = d3.axisLeft()
-                            .scale(yScale)
-                            .ticks(10);
-
-            //For converting strings to Dates
-            var parseTime = d3.timeParse('%Y')
-
-			//For converting Dates to strings
-			var formatTime = d3.timeFormat("%Y");
+                            .scale(yScale);
 
             
             var rowConverter = function(d, i, columns) {
@@ -58,78 +49,40 @@
                     d[columns[i]] = +d[columns[i]];
                 }
                 
-                return {
-                    Year: parseTime(d.Year),
-                    emiglia: d.emiglia,
-                    lombardy: d.lombardy
-                };
+                return d;
             }
             
 
 
             d3.csv('data _crossTab.csv', rowConverter, function(data) {
                 dataset = data;
-                console.log(dataset);
-                var minDate = d3.min(dataset, function(d) { return d.Year; });
-                var maxDate = d3.max(dataset, function(d) { return d.Year; });
-
-                var minDateD = new Date(minDate);
-                var maxDateD = new Date(maxDate);
 
                 var keys = dataset.columns.slice(1);
-                
-                var test = dataset.map(function(d) {return d.Year})
-
-
-
-                minDateD.setDate(minDateD.getDate() - 360);
-                maxDateD.setDate(maxDateD.getDate() + 360); 
-                
-                test.push(maxDateD);
-                test.unshift(minDateD);
-                console.log(test);                
+                console.log(keys);
+                var years = dataset.map(function(d) {return d.Year})
+                console.log(years);
 				//Create scale functions
-                xScale.domain([ minDateD, maxDateD ]);
-                
-                /*
-                for (var i = 0; i < dataset.length; i++) {
-                    console.log(dataset[i]['date'], xScale(dataset[i]['date']), formatTime(dataset[i]['date']));
-                }
-                */
+                xScale.domain(years);
 
                 yScale.domain([0, d3.max(dataset, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
                 cScale.domain(keys);
 
 
-
-
-                for (var i = 0; i < dataset.length; i++) {
-                    console.log(dataset[i]);
-                    console.log(dataset[i].Year);
-                    console.log(xScale(dataset[i].Year));
-                }
-                /*
-                var types = keys.map(function(key) {
-                    return {
-                    name: key,
-                    values: dataset.map(function(d) {
-                        return {year: d.Year, value: d[key]};
-                    })
-                    };
-                });
-                
-                console.log(types);
-                console.log(types[0].name);
-                console.log(types[0].values[0].year);
-                */
                 var type = svg.selectAll("g")
                                 .data(dataset)
                                 .enter().append("g")
-                                .attr("class", "type");
+                                .attr("class", "type")
+                                
+                                .attr("transform", function(d) { 
+                                    return "translate(" + xScale.bandwidth()/2 + ",0)"; 
+                                });
+                                
                 //console.log(keys.map(function(key) { return {key: key, year: dataset[0].Year, value: dataset[0][key]}; }));
                  type.selectAll('circle')
-                    .data(function(d) { return keys.map(function(key) { return {key: key, year: d.Year, value: d[key]}; }); })
+                    .data(function(d) { return keys.map(function(key) { 
+                        return {key: key, year: d.Year, value: d[key]}; }); 
+                    })
                     .enter()
                     .append('circle')
                     .attr('cx', function(d) {
