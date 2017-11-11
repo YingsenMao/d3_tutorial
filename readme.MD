@@ -1,5 +1,6 @@
 ## Scatter Plot with Two categorial Variables
-<img src="Scatter Plot with Two categorial variable 3" width="48">
+<img src="Scatter Plot with Two categorial variable 3.PNG" width="48">  
+
 ```javascript
 //Scale with range
 var xScale = d3.scaleBand()
