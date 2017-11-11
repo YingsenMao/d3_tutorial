@@ -1,9 +1,0 @@
-type,region,year,value
-gdp,lombardy,2004,70
-gdp,lombardy,2008,50
-gdp,lombardy,2012,30
-gdp,lombardy,2016,110
-gdp,emiglia,2004,10
-gdp,emiglia,2008,15
-gdp,emiglia,2012,23
-gdp,emiglia,2016,70

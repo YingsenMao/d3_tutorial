@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: A simple bar chart</title>
+        <script type="text/javascript" src="d3.js"></script>
+		<style type="text/css">     
+
+        </style>
+	</head>
+	<body>
+        <script type="text/javascript">
+            /*
+            https://bost.ocks.org/mike/nest/
+            https://bl.ocks.org/mbostock/3887051
+            https://bl.ocks.org/mbostock/3886208
+            http://bl.ocks.org/ZJONSSON/3918369
+            */
+            var dataset;
+
+            var margin = {top: 20, right: 80, bottom: 30, left: 50},
+                width = 960 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var svg = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
+            var xScale0 = d3.scaleBand()
+                            .rangeRound([ 0, width ])
+                            .paddingInner(0.1);
+
+            var xScale1 = d3.scaleBand()
+                            .padding(0.05);
+
+            var yScale = d3.scaleLinear()
+                            .range([height, 0]);     
+
+            var cScale = d3.scaleOrdinal()
+                            .range(["#98abc5", "#ff8c00"]);
+
+            var xAxis = d3.axisBottom()
+                            .scale(xScale0);    
+
+            var yAxis = d3.axisLeft()
+                            .scale(yScale);
+
+            
+            var rowConverter = function(d, i, columns) {
+                for (var i = 1, n = columns.length; i < n; ++i) {
+                    d[columns[i]] = +d[columns[i]];
+                }
+                
+                return d;
+            }
+            
+
+
+            d3.csv('data _crossTab.csv', rowConverter, function(data) {
+                dataset = data;
+
+                var keys = dataset.columns.slice(1);
+                console.log(keys);
+                var years = dataset.map(function(d) {return d.Year})
+                console.log(years);
+				//Create scale functions
+                xScale0.domain(years);
+                xScale1.domain(keys).rangeRound([0, xScale0.bandwidth()])
+                yScale.domain([0, d3.max(dataset, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+
+                cScale.domain(keys);
+
+
+                var type = svg.selectAll("g")
+                                .data(dataset)
+                                .enter().append("g")
+                                .attr("class", "type")
+                                .attr("transform", function(d) { 
+                                    return "translate(" + xScale0(d.Year) + ",0)"; 
+                                });
+                                
+                //console.log(keys.map(function(key) { return {key: key, year: dataset[0].Year, value: dataset[0][key]}; }));
+                 type.selectAll('rect')
+                    .data(function(d) { return keys.map(function(key) { 
+                        return {key: key, value: d[key]}; }); 
+                    })
+                    .enter()
+                    .append('rect')
+                    .attr('x', function(d) {
+                        return xScale1(d.key);
+                    })
+                    .attr('y', function(d) {
+                        return yScale(d.value);
+                    })
+                    .attr('width', xScale1.bandwidth()) 
+                    .attr('height', function(d) { return height - yScale(d.value); })                   
+                    .style('fill', function(d) {
+                        return cScale(d.key);
+                    })
+
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis);
+
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .call(yAxis)
+                    .append("text")
+                    .attr("x", 2)
+                    .attr("y", yScale(yScale.ticks().pop()) + 0.5)
+                    .attr("dy", "0.32em")
+                    .attr("fill", "#000")
+                    .attr("font-weight", "bold")
+                    .attr("text-anchor", "start")
+                    .text("Value");
+
+
+                var legend = svg.append('g')
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', 13)
+                    .attr('text-anchor', 'end')
+                    .selectAll('g')
+                    .data(keys.slice().reverse())
+                    .enter().append('g')
+                    .attr('transform', function(d, i) { 
+                        return 'translate(0,' + i * 20 + ')'; 
+                    });
+
+                
+                legend.append('rect')
+                    .attr('x', 120)
+                    .attr('width', 25)
+                    .attr('height', 19)
+                    .attr('fill', cScale);
+                
+                legend.append('text')
+                    .attr('x', 110)
+                    .attr('y', 9.5)
+                    .attr('dy', '0.40em')
+                    .text(function(d) { return d; });
+            })
+            
+			
+		</script>
+	</body>
+</html>
