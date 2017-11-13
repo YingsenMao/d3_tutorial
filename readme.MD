@@ -1,3 +1,69 @@
+## Shape Generator Tutorial
+Complex shapes can be created using shape generator. [reference](https://github.com/d3/d3-shape)  
+### Line Generator
+Line generator can then be used to compute the d attribute of an SVG path element:
+```javascript
+var line = d3.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.value); });
+
+path.datum(data).attr("d", line);   
+```  
+### Arc Generator  
+The arc generator produces a circular or annular sector, as in a pie or donut chart. The pie generator computes the necessary angles to represent an array of data as a pie or donut chart.  
+
+## Group and Transform
+* Grouping - To group a set of SVG elements that share the same attribute
+* Transforming - To define a new coordinate system for a set of SVG elements by applying a transformation to **each** coordinate specified in this set of SVG elements
+```javascript
+//from 2 Categorial Vlbs 1 Continuous Vlbs/Scatter Plot
+    var category = svg.selectAll("g")
+                    .data(dataset)
+                    .enter().append("g")
+                    .attr("class", "category")
+                    
+                    .attr("transform", function(d) { 
+                        return "translate(" + xScale.bandwidth()/2 + ",0)"; 
+                    });
+```  
+
+## Looping
+### Loop to get the largest y scale number
+```javascript
+//array within array within array
+var dataset = [
+                [ [ 0, 5 ], [ 0, 4 ], [ 0, 2 ], [ 0, 7 ], [ 0, 23] ],
+                [ [ 5, 15 ], [ 4, 16 ], [ 2, 21 ], [ 7, 30 ], [ 23, 40 ] ],
+                [ [ 15, 37 ], [ 16, 44 ], [ 21, 53 ], [ 30, 65 ], [ 40, 83 ] ]
+             ];
+
+//Largest Number in dataset
+d3.max(dataset, function(innerArray) { 
+    return d3.max(innerArray, function(innerinnerArray) { 
+        return d3.max(innerinnerArray, function(innerinnerinnerArray) { 
+            return innerinnerinnerArray;
+        })
+    }) 
+})
+
+```  
+```javascript
+//object within array
+var dataset =  [ {Year: "2004", emiglia: 10, lombardy: 70}, 
+                 {Year: "2008", emiglia: 15, lombardy: 50},
+                 {Year: "2012", emiglia: 23, lombardy: 30},
+                 {Year: "2016", emiglia: 70, lombardy: 110} ];
+
+//get the key
+var keys = Object.keys(dataset[0]);
+
+//Largest Number in dataset
+d3.max(dataset, function(d) {
+     return d3.max(keys, function(key) { 
+         return d[key]; 
+    }); 
+})
+```  
 ## Two categorial Variables and One Continuous Variable
 ### Dot Plot
 <img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Scatter Plot/dot_plot.PNG" width="480">  

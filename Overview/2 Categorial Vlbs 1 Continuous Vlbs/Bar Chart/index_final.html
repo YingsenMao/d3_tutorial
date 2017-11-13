@@ -68,6 +68,7 @@
 				//Create scale functions
                 xScale0.domain(years);
                 xScale1.domain(keys).rangeRound([0, xScale0.bandwidth()])
+                console.log(dataset);
                 yScale.domain([0, d3.max(dataset, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
                 cScale.domain(keys);
