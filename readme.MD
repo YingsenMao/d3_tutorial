@@ -1,6 +1,6 @@
 ## Two categorial Variables and One Continuous Variable
 ### Dot Plot
-<img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Scatter Plot/dot_plot.PNG" width="480">  
+<img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Scatter Plot/dot_plot.PNG" width="480">    
 ### Bar Chart
 <img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Bar Chart/bar_chart.PNG" width="480">
 
