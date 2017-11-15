@@ -70,6 +70,11 @@ d3.max(dataset, function(d) {
 ### Bar Chart
 <img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Bar Chart/bar_chart.PNG" width="480">
 
+## Scale
+* scaleLinear() - continuous range; continuous domain; output generated from continuous range
+* scaleBrand() - continuous range; discrete domain; output generated from continuous range
+* scaleOrdinal() - discrete range; discrete domain; output generated from discrete range
+* scaleQuantize() - discrete range; continuous domain; output generated from discrete range
 ```javascript
 //Scale with range
 var xScale = d3.scaleBand()
@@ -99,4 +104,13 @@ yScale.domain([0, d3.max(dataset, function(d) { return d3.max(keys, function(key
 })]).nice();
 
 cScale.domain(keys);
+```  
+
+```javascript
+var color = d3.scaleQuantize()
+                .range(["rgb(237,248,233)","rgb(186,228,179)","rgb(116,196,118)","rgb(49,163,84)","rgb(0,109,44)"])
+                .domain([
+					d3.min(data, function(d) { return d.value; }), 
+					d3.max(data, function(d) { return d.value; })
+				        ]);
 ```
