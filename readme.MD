@@ -65,16 +65,14 @@ d3.max(dataset, function(d) {
 })
 ```  
 ### Loop over nested array/object to append elements
-Using an anonymous function within data() lets us loop over inner data/array/object
+Using an anonymous function within data() lets us loop over inner data/array/object.
+* Example One - Loop over and append element to the inner most array
 ```javascript
-/*
-dataset
-[
-    [ [ 0, 5 ], [ 0, 4 ], [ 0, 2 ], [ 0, 7 ], [ 0, 23] ],            // apples
-    [ [ 5, 15 ], [ 4, 16 ], [ 2, 21 ], [ 7, 30 ], [ 23, 40 ] ],      // oranges
-    [ [ 15, 37 ], [ 16, 44 ], [ 21, 53 ], [ 30, 65 ], [ 40, 83 ] ]   // grapes
-];
-*/
+var dataset = [
+                [ [ 0, 5 ], [ 0, 4 ], [ 0, 2 ], [ 0, 7 ], [ 0, 23] ],            // apples
+                [ [ 5, 15 ], [ 4, 16 ], [ 2, 21 ], [ 7, 30 ], [ 23, 40 ] ],      // oranges
+                [ [ 15, 37 ], [ 16, 44 ], [ 21, 53 ], [ 30, 65 ], [ 40, 83 ] ]   // grapes
+            ];
 // Add a group for each row of data
 var groups = svg.selectAll('g')
                 .data(dataset)
@@ -101,12 +99,13 @@ var rects = groups.selectAll('rect')
                     })
                     .attr('width', xScale.bandwidth());
 ```
+* Example Two - Loop over each object and re-create another array based on the key array
 ```javascript
 var dataset = [ {Year: "2004", emiglia: 10, lombardy: 70}, 
                 {Year: "2008", emiglia: 15, lombardy: 50},
                 {Year: "2012", emiglia: 23, lombardy: 30}, 
                 {Year: "2016", emiglia: 70, lombardy: 110} ]
-
+// ['emiglia', 'lombardy']
 var keys = dataset.columns.slice(1);
 
 var group = svg.selectAll("g")
@@ -120,6 +119,13 @@ var group = svg.selectAll("g")
                                 
 
 var circle = type.selectAll('circle')
+                    /*
+                        for the first inner object element, it creates:
+                        [
+                            {key: 'emiglia', year: 2004, value: 10}, 
+                            {key: 'lombardy', year: 2004, value: 70}
+                        ]
+                    */
                     .data(function(d) { return keys.map(function(key) { 
                         return {key: key, year: d.Year, value: d[key]}; }); 
                     })
