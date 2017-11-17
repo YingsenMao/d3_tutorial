@@ -64,6 +64,78 @@ d3.max(dataset, function(d) {
     }); 
 })
 ```  
+### Loop over nested array/object to append elements
+Using an anonymous function within data() lets us loop over inner data/array/object
+```javascript
+/*
+dataset
+[
+    [ [ 0, 5 ], [ 0, 4 ], [ 0, 2 ], [ 0, 7 ], [ 0, 23] ],            // apples
+    [ [ 5, 15 ], [ 4, 16 ], [ 2, 21 ], [ 7, 30 ], [ 23, 40 ] ],      // oranges
+    [ [ 15, 37 ], [ 16, 44 ], [ 21, 53 ], [ 30, 65 ], [ 40, 83 ] ]   // grapes
+];
+*/
+// Add a group for each row of data
+var groups = svg.selectAll('g')
+                .data(dataset)
+                .enter()
+                .append('g')
+                .style('fill', function(d, i) {
+                    return color(i)
+                })
+
+// Add a rect for each inner data value within each group
+var rects = groups.selectAll('rect')
+                    // where magic things happen
+                    .data(function(d) { return d; })
+                    .enter()
+                    .append('rect')
+                    .attr('x', function(d, i) {
+                        return xScale(i)
+                    })
+                    .attr('y', function(d) {
+                        return yScale(d[0])
+                    })
+                    .attr('height', function(d) {
+                        return yScale(d[1]) - yScale(d[0]);
+                    })
+                    .attr('width', xScale.bandwidth());
+```
+```javascript
+var dataset = [ {Year: "2004", emiglia: 10, lombardy: 70}, 
+                {Year: "2008", emiglia: 15, lombardy: 50},
+                {Year: "2012", emiglia: 23, lombardy: 30}, 
+                {Year: "2016", emiglia: 70, lombardy: 110} ]
+
+var keys = dataset.columns.slice(1);
+
+var group = svg.selectAll("g")
+                .data(dataset)
+                .enter().append("g")
+                .attr("class", "type")
+                
+                .attr("transform", function(d) { 
+                    return "translate(" + xScale.bandwidth()/2 + ",0)"; 
+                });
+                                
+
+var circle = type.selectAll('circle')
+                    .data(function(d) { return keys.map(function(key) { 
+                        return {key: key, year: d.Year, value: d[key]}; }); 
+                    })
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function(d) {
+                        return xScale(d.year);
+                    })
+                    .attr('cy', function(d) {
+                        return yScale(d.value);
+                    })
+                    .attr('r', 8)                    
+                    .style('fill', function(d) {
+                        return cScale(d.key);
+                    });
+```
 ## Two categorial Variables and One Continuous Variable
 ### Dot Plot
 <img src="Overview/2 Categorial Vlbs 1 Continuous Vlbs/Scatter Plot/dot_plot.PNG" width="480">    
